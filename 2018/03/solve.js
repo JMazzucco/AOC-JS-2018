@@ -1,10 +1,10 @@
 
 
 function solve(input, part) {
-  if (part === 1) {
+  if (part === 0) {
     return overlap(input);
-    // } else {
-    //   return getFabricBoxIds(input);
+  } else {
+    return nonOverlapping(input);
   }
 }
 
@@ -56,11 +56,39 @@ const overlap = input => {
   return [...new Set(overlappingCoordinates)].length;
 };
 
+const nonOverlapping = input => {
+  let nonOverlappingId;
 
-const expected = part => (part === 1 ? 103806 : 'qyzphxoiseldjrntfygvdmanu');
+  const claims = input.map(s => {
+    let arr = s.split(' ')
+    let id = arr[0].slice(1)
+    let left = parseInt(arr[2].split(',')[0])
+    let top = parseInt(arr[2].split(',')[1].slice(0, -1))
+    let right = left + parseInt(arr[3].split('x')[0]) - 1
+    let bottom = top + parseInt(arr[3].split('x')[1]) - 1
+
+    return { id, left, top, right, bottom }
+  })
+
+  claims.forEach((rec1) => {
+    let overlap = false
+    claims.forEach((rec2) => {
+      if(rec1.id === rec2.id) { return }
+      if(intersectRecs(rec1, rec2)) { overlap = true }
+    })
+
+    if (!overlap) { nonOverlappingId = rec1.id }
+    overlap = false
+  })
+
+  return nonOverlappingId;
+};
+
+const expected = part => (part === 1 ? 103806 : 625);
 
 module.exports = {
   overlap,
+  nonOverlapping,
   solve,
   expected
 };
